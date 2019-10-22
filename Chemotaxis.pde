@@ -23,7 +23,6 @@ void draw() {
 	}
 
 	for (Kite kite : kites) {
-		println(springy);
 		kite.tick(springy);
 	}
 
