@@ -1,49 +1,64 @@
-Bacteria[] bacteria;
+Kite[] kites;
+ArrayList<Press> presses;
 int springy;
 
 void setup() {
-	springy = 0;
 	size(1000, 1000);
-	bacteria = new Bacteria[50];
 
-	for (int i = 0; i < bacteria.length; i++) {
-		bacteria[i] = new Bacteria();
+	springy = 0;
+	kites = new Kite[50];
+	presses = new ArrayList();
+
+	for (int i = 0; i < kites.length; i++) {
+		kites[i] = new Kite();
 	}
 
 }
 
 void draw() {
 	background(177);
-	for (Bacteria germ : bacteria) {
-		germ.show(mousePressed);
+
+	for (Press press : presses) {
+		press.tick(springy);
+	}
+
+	for (Kite kite : kites) {
+		println(springy);
+		kite.tick(springy);
 	}
 
 	if (mousePressed) {
 		springy++;
 	} else {
-		for (Bacteria germ : bacteria) {
-			germ.boost(springy);
-		}
 		springy = 0;
 	}
 }
 
-class Bacteria {
+class Kite {
 	private float x, y, dir, dirVel;
 	private float tempVel, vel;
+	private int col;
 
-	public Bacteria() {
+	private final int size = 4;
+	private final int colorRange = 25;
+
+	public Kite() {
 		x = random(width);
 		y = random(height);
 		vel = random(2, 4);
 		dir = random(TWO_PI);
 		dirVel = random(-0.3, 0.3);
+		col = color(random(255 - colorRange, 255), random(255 - colorRange, 255), random(255 - colorRange, 255));
 		tempVel = 0;
 	}
 
-	public void show(boolean pressed) {
-		if (pressed) slow();
+	private void show() {
+		stroke(0);
+		fill(col);
+		triangle(x + 5 * size * cos(dir), y + 5 * size * sin(dir), x + size * 2, y + size * 2, x - size * 2, y - size * 2);
+	}
 
+	private void move() {
 		x += (vel + tempVel) * cos(dir);
 		y += (vel + tempVel) * sin(dir);
 		if (vel + tempVel > 0) 
@@ -62,7 +77,7 @@ class Bacteria {
 
 		if (tempVel > 0) {
 			tempVel *= 0.99;
-		} else if (tempVel < 0 && !pressed) {
+		} else if (tempVel < 0 && !mousePressed) {
 			tempVel += 0.1;
 		}
 
@@ -70,8 +85,17 @@ class Bacteria {
 		if (random(dirVel * 100) > 19) {
 			dirVel =  random(-0.3, 0.3);
 		}
+	}
 
-		triangle(x + 10 * cos(dir), y + 10 * sin(dir), x + 4, y + 4, x - 4, y - 4);
+	public void tick(float springy) {
+		if (mousePressed) {
+			slow();
+		} else {
+			boost(springy);
+		}
+
+		move();
+		show();
 	}
 
 	public void boost(float speed) {
@@ -85,4 +109,39 @@ class Bacteria {
 			tempVel = -vel;
 		}
 	}
+}
+
+class Press {
+	private float radius, x, y;
+	private boolean boosted;
+
+	public Press() {
+		radius = width;
+		boosted = false;
+		x = mouseX;
+		y = mouseY;
+	}
+
+	public void tick(int counter) {
+		if (mousePressed && !boosted) {
+			radius = width * 2 - ((width * 2 - width / 20.0) * counter * counter) / ((counter * counter + 150.0));
+		} else {
+			boosted = true;
+			if (radius < width * 3) {
+				radius *= 1.2;
+			}
+		}
+
+		show();
+	}
+
+	private void show() {
+		noStroke();
+		fill(radius / 15.0 < 78 ? 177 + (78 - radius / 15.0) : 177);
+		ellipse(x, y, radius, radius);
+	}
+}
+
+public void mousePressed() {
+	presses.add(new Press());
 }
