@@ -35,20 +35,19 @@ void draw() {
 }
 
 class Kite {
-	private float x, y, dir, dirVel;
-	private float tempVel, vel;
+	private float x, y, dir, dirVel, tempVel, vel;
 	private int col;
 
 	private final int size = 4;
 	private final int colorRange = 25;
 
 	public Kite() {
-		x = random(width);
-		y = random(height);
-		vel = random(2, 4);
-		dir = random(TWO_PI);
-		dirVel = random(-0.3, 0.3);
-		col = color(random(255 - colorRange, 255), random(255 - colorRange, 255), random(255 - colorRange, 255));
+		x = (float) Math.random() * width;
+		y = (float) Math.random() * height;
+		vel = (float) Math.random() * 3 + 2;
+		dir = (float) Math.random() * TWO_PI;
+		dirVel = (float) Math.random() * 0.3 - 0.3;
+		col = color((int) (Math.random() * colorRange + 255 - colorRange), (int) (Math.random() * colorRange + 255 - colorRange), (int) (Math.random() * colorRange + 255 - colorRange));
 		tempVel = 0;
 	}
 
@@ -83,7 +82,7 @@ class Kite {
 
 
 		if (random(dirVel * 100) > 19) {
-			dirVel =  random(-0.3, 0.3);
+			dirVel = (float) Math.random() * 0.3 - 0.3;
 		}
 	}
 
